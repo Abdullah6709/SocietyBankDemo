@@ -145,7 +145,7 @@ export default function ApplicationForm() {
           </FormControl>
 
           <FormControl fullWidth margin="normal">
-            <InputLabel id="product-label">Product</InputLabel>
+            <InputLabel id="product-label">Loan Item</InputLabel>
             <Select
               labelId="product-label"
               label="product-label"
