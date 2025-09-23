@@ -67,7 +67,7 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
 const menu = [
   { to: '/', label: 'Dashboard', icon: <HomeIcon /> },
   { to: '/members', label: 'Members', icon: <PeopleIcon /> },
-  { to: '/accounts', label: 'Accounts', icon: <AccountBalanceIcon /> },
+  { to: '/accounts', label: 'Accounts & Deposits', icon: <AccountBalanceIcon /> },
     { to: '/transaction', label: 'Transaction', icon: <SettingsIcon /> },
   { to: '/loans', label: 'Loans', icon: <SavingsIcon /> },
   { to: '/reports', label: 'Reports', icon: <AssessmentIcon /> },
