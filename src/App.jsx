@@ -21,7 +21,7 @@ export default function App() {
   useEffect(() => {
     const stored = localStorage.getItem("members");
     if (!stored || stored === "[]") {
-      fetch("/src/Member.json") // ⚠️ make sure Member.json is inside /public folder
+      fetch("/public/Member.json") // ⚠️ make sure Member.json is inside /public folder
         .then((res) => res.json())
         .then((data) => {
           localStorage.setItem("members", JSON.stringify(data));

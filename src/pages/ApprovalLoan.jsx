@@ -17,8 +17,18 @@ export default function ApprovalWorkflow() {
     const [loans, setLoans] = useState([]);
 
     useEffect(() => {
-        const storedLoans = JSON.parse(localStorage.getItem("loans") || "[]");
-        setLoans(storedLoans);
+        const members = JSON.parse(localStorage.getItem("members") || "[]");
+
+        // Flatten loans from members
+        const allLoans = members.flatMap((m) =>
+            (m.loans || []).map((loan) => ({
+                ...loan,
+                memberId: m.memberId,
+                memberName: m.name,
+            }))
+        );
+
+        setLoans(allLoans);
     }, []);
 
     const handleApprove = (loanId) => {
@@ -26,7 +36,16 @@ export default function ApprovalWorkflow() {
             l.loanId === loanId ? { ...l, status: "approved" } : l
         );
         setLoans(updatedLoans);
-        localStorage.setItem("loans", JSON.stringify(updatedLoans));
+
+        // sync back to members in localStorage
+        const members = JSON.parse(localStorage.getItem("members") || "[]");
+        const updatedMembers = members.map((m) => ({
+            ...m,
+            loans: (m.loans || []).map((loan) =>
+                loan.loanId === loanId ? { ...loan, status: "approved" } : loan
+            ),
+        }));
+        localStorage.setItem("members", JSON.stringify(updatedMembers));
     };
 
     const handleReject = (loanId) => {
@@ -34,7 +53,16 @@ export default function ApprovalWorkflow() {
             l.loanId === loanId ? { ...l, status: "rejected" } : l
         );
         setLoans(updatedLoans);
-        localStorage.setItem("loans", JSON.stringify(updatedLoans));
+
+        // sync back to members in localStorage
+        const members = JSON.parse(localStorage.getItem("members") || "[]");
+        const updatedMembers = members.map((m) => ({
+            ...m,
+            loans: (m.loans || []).map((loan) =>
+                loan.loanId === loanId ? { ...loan, status: "rejected" } : loan
+            ),
+        }));
+        localStorage.setItem("members", JSON.stringify(updatedMembers));
     };
 
     return (

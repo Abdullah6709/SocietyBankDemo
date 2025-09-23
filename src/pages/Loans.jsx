@@ -35,7 +35,7 @@ export default function ApplicationForm() {
     if (stored) {
       setMembers(JSON.parse(stored));
     } else {
-      fetch("/src/Member.json")
+      fetch("/public/Member.json")
         .then((res) => res.json())
         .then((data) => {
           setMembers(data);
