@@ -13,10 +13,10 @@ import {
   Paper,
 } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom"; // ✅ import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export default function ApplicationForm() {
-  const navigate = useNavigate(); // ✅ initialize navigate
+  const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState("");
   const [form, setForm] = useState({
@@ -25,15 +25,24 @@ export default function ApplicationForm() {
     memberId: "",
     product: "",
     principal: "",
-    interestPal: "",
+    interest: "",
     tenureMonths: "",
   });
 
+  // ✅ Load members: first from localStorage, else from Member.json
   useEffect(() => {
-    fetch("/src/Member.json")
-      .then((res) => res.json())
-      .then((data) => setMembers(data))
-      .catch((err) => console.error("Error loading members.json:", err));
+    const stored = localStorage.getItem("members");
+    if (stored) {
+      setMembers(JSON.parse(stored));
+    } else {
+      fetch("/src/Member.json")
+        .then((res) => res.json())
+        .then((data) => {
+          setMembers(data);
+          localStorage.setItem("members", JSON.stringify(data));
+        })
+        .catch((err) => console.error("Error loading Member.json:", err));
+    }
   }, []);
 
   const handleChange = (e) => {
@@ -60,9 +69,10 @@ export default function ApplicationForm() {
 
     // EMI Calculation
     const P = parseFloat(form.principal);
-    const annualRate = parseFloat(form.interestPal);
+    const annualRate = parseFloat(form.interest);
     const N = parseInt(form.tenureMonths, 10);
     const R = annualRate / 12 / 100;
+
     const emi =
       (P * R * Math.pow(1 + R, N)) /
       (Math.pow(1 + R, N) - 1);
@@ -75,36 +85,39 @@ export default function ApplicationForm() {
       createdAt: new Date().toISOString(),
       emi: emi.toFixed(2),
       totalPayable: (emi * N).toFixed(2),
-      repaymentSchedule: []
+      repaymentSchedule: [],
     };
 
+    // ✅ Add loan to the correct member
     const updatedMembers = membersData.map((m) => {
       if (m.memberId === form.memberId) {
         return {
           ...m,
-          loans: [...(m.loans || []), newLoan]
+          loans: [...(m.loans || []), newLoan],
         };
       }
       return m;
     });
 
     localStorage.setItem("members", JSON.stringify(updatedMembers));
+    setMembers(updatedMembers);
+
     alert("Loan added for " + form.memberId);
 
+    // Reset form
     setForm({
       id: "",
       loanId: "",
       memberId: "",
       product: "",
       principal: "",
-      interestPal: "",
-      tenureMonths: ""
+      interest: "",
+      tenureMonths: "",
     });
     setSelectedMember("");
 
     navigate("/approvalloan");
   };
-
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
@@ -118,6 +131,7 @@ export default function ApplicationForm() {
             <InputLabel id="member-select-label">Select Member</InputLabel>
             <Select
               labelId="member-select-label"
+              label="member-select-label"
               value={selectedMember}
               onChange={handleMemberChange}
               required
@@ -130,11 +144,11 @@ export default function ApplicationForm() {
             </Select>
           </FormControl>
 
-          {/* Loan Details */}
           <FormControl fullWidth margin="normal">
             <InputLabel id="product-label">Product</InputLabel>
             <Select
               labelId="product-label"
+              label="product-label"
               name="product"
               value={form.product}
               onChange={handleChange}
@@ -144,8 +158,15 @@ export default function ApplicationForm() {
               <MenuItem value="Home">Home</MenuItem>
               <MenuItem value="Car">Car</MenuItem>
               <MenuItem value="Education">Education</MenuItem>
+              <MenuItem value="Gold">Gold Loan</MenuItem>
+              <MenuItem value="Business">Business Loan</MenuItem>
+              <MenuItem value="Vehicle">Vehicle Loan</MenuItem>
+              <MenuItem value="Mortgage">Mortgage</MenuItem>
+              <MenuItem value="EducationPlus">Education Plus</MenuItem>
+              <MenuItem value="Agriculture">Agriculture Loan</MenuItem>
             </Select>
           </FormControl>
+
 
           <TextField
             fullWidth
@@ -161,9 +182,9 @@ export default function ApplicationForm() {
           <TextField
             fullWidth
             label="Interest (%)"
-            name="interestPal"
+            name="interest"
             type="number"
-            value={form.interestPal}
+            value={form.interest}
             onChange={handleChange}
             margin="normal"
             required
@@ -188,4 +209,3 @@ export default function ApplicationForm() {
     </Container>
   );
 }
-

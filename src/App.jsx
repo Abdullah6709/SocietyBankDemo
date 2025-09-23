@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -18,7 +18,18 @@ import ApprovalWorkflow from "./pages/ApprovalLoan";
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [credentials, setCredentials] = useState(null);
-
+  useEffect(() => {
+    const stored = localStorage.getItem("members");
+    if (!stored || stored === "[]") {
+      fetch("/src/Member.json") // ⚠️ make sure Member.json is inside /public folder
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem("members", JSON.stringify(data));
+          console.log("✅ Members loaded into localStorage:", data);
+        })
+        .catch((err) => console.error("❌ Error loading Member.json:", err));
+    }
+  }, []);
   const handleLogin = (creds) => {
     setCredentials(creds);
     setIsLoggedIn(true);

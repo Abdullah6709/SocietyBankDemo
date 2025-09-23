@@ -64,7 +64,7 @@ export default function ApprovalWorkflow() {
                                 <TableCell>{loan.memberId}</TableCell>
                                 <TableCell>{loan.product}</TableCell>
                                 <TableCell>{loan.principal}</TableCell>
-                                <TableCell>{loan.interestPal}</TableCell>
+                                <TableCell>{loan.interest}</TableCell>
                                 <TableCell>{loan.tenureMonths}</TableCell>
                                 <TableCell>{loan.status}</TableCell>
                                 <TableCell>
