@@ -44,20 +44,20 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
   margin: theme.spacing(0.5, 1),
   borderRadius: '12px',
   overflow: 'hidden',
-  
+
   '& .MuiListItemButton-root': {
     borderRadius: '12px',
     margin: 0,
     transition: 'all 0.3s ease',
     border: '1px solid transparent'
   },
-  
+
   '&.active .MuiListItemButton-root': {
     background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
     boxShadow: '0 4px 12px rgba(238, 90, 36, 0.3)',
     border: '1px solid rgba(255,255,255,0.2)'
   },
-  
+
   '&:hover:not(.active) .MuiListItemButton-root': {
     background: 'rgba(255,255,255,0.08)',
     transform: 'translateX(4px)'
@@ -68,8 +68,9 @@ const menu = [
   { to: '/', label: 'Dashboard', icon: <HomeIcon /> },
   { to: '/members', label: 'Members', icon: <PeopleIcon /> },
   { to: '/accounts', label: 'Accounts', icon: <AccountBalanceIcon /> },
-    { to: '/transaction', label: 'Transaction', icon: <SettingsIcon /> },
+  { to: '/transaction', label: 'Transaction', icon: <SettingsIcon /> },
   { to: '/loans', label: 'Loans', icon: <SavingsIcon /> },
+
   { to: '/reports', label: 'Reports', icon: <AssessmentIcon /> },
 
 ]
@@ -78,10 +79,10 @@ export default function Sidebar() {
   return (
     <StyledDrawer variant="permanent">
       <LogoSection>
-        <Box sx={{ 
-          width: 60, 
-          height: 60, 
-          background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)', 
+        <Box sx={{
+          width: 60,
+          height: 60,
+          background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
           borderRadius: '16px',
           display: 'flex',
           alignItems: 'center',
@@ -98,7 +99,7 @@ export default function Sidebar() {
           Premium Banking Solutions
         </Typography>
       </LogoSection>
-      
+
       <List sx={{ px: 1.5 }}>
         {menu.map((m) => (
           <ListItem key={m.to} disablePadding sx={{ mb: 0.5 }}>
@@ -108,12 +109,12 @@ export default function Sidebar() {
                   <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
                     {m.icon}
                   </ListItemIcon>
-                  <ListItemText 
-                    primary={m.label} 
-                    primaryTypographyProps={{ 
+                  <ListItemText
+                    primary={m.label}
+                    primaryTypographyProps={{
                       fontSize: '0.95rem',
                       fontWeight: isActive ? 600 : 400
-                    }} 
+                    }}
                   />
                 </ListItemButton>
               )}
@@ -121,24 +122,24 @@ export default function Sidebar() {
           </ListItem>
         ))}
       </List>
-      
+
       <Box sx={{ flexGrow: 1 }} />
-      
+
       <Box sx={{ p: 3, textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        <Box sx={{ 
-          display: 'inline-flex', 
-          alignItems: 'center', 
-          background: 'rgba(255,255,255,0.1)', 
-          padding: '6px 12px', 
+        <Box sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.1)',
+          padding: '6px 12px',
           borderRadius: '20px',
           fontSize: '0.75rem'
         }}>
-          <Box sx={{ 
-            width: 8, 
-            height: 8, 
-            background: '#4caf50', 
-            borderRadius: '50%', 
-            mr: 1 
+          <Box sx={{
+            width: 8,
+            height: 8,
+            background: '#4caf50',
+            borderRadius: '50%',
+            mr: 1
           }} />
           System Online
         </Box>
