@@ -81,7 +81,10 @@ export default function ApprovalWorkflow() {
                             <TableCell>Principal</TableCell>
                             <TableCell>Interest (%)</TableCell>
                             <TableCell>Tenure (Months)</TableCell>
+                            <TableCell>EMI</TableCell>
+                            <TableCell>Total Payable</TableCell>
                             <TableCell>Status</TableCell>
+
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -94,6 +97,9 @@ export default function ApprovalWorkflow() {
                                 <TableCell>{loan.principal}</TableCell>
                                 <TableCell>{loan.interest}</TableCell>
                                 <TableCell>{loan.tenureMonths}</TableCell>
+                                <TableCell>{loan.emi}</TableCell>
+                                <TableCell>{loan.totalPayable}</TableCell>
+
                                 <TableCell>{loan.status}</TableCell>
                                 <TableCell>
                                     {loan.status === "pending" && (
