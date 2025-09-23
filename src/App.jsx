@@ -13,6 +13,7 @@ import Reports from "./pages/Reports";
 import Login from "./pages/Login";
 import Members from "./pages/Members";
 import Transaction from "./pages/Transaction";
+import ApprovalWorkflow from "./pages/ApprovalLoan";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,8 +46,9 @@ export default function App() {
                       <Route path="/accounts" element={<Accounts />} />
                       <Route path="/loans" element={<Loans />} />
                       <Route path="/reports" element={<Reports />} />
-                        <Route path="/members" element={<Members />} />
-                         <Route path="/transaction" element={<Transaction />} />
+                      <Route path="/members" element={<Members />} />
+                      <Route path="/transaction" element={<Transaction />} />
+                      <Route path="/approvalloan" element={<ApprovalWorkflow />}></Route>
                       <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
                   </Box>
