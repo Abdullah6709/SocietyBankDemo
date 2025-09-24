@@ -76,8 +76,8 @@ const menu = [
     label: 'Loans',
     icon: <SavingsIcon />,
     children: [
-      { to: '/loans', label: 'New Loan' },
-      { to: '/approvalloan', label: 'Loan Applications' }
+      { to: '/loans', label: 'Loan Form' },
+      { to: '/approvalloan', label: 'Loan Status' }
     ]
   },
   { to: '/reports', label: 'Reports', icon: <AssessmentIcon /> }

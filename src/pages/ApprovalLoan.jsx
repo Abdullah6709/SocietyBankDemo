@@ -11,25 +11,32 @@ import {
     TableCell,
     TableBody,
     Chip,
+    Stack,
+    IconButton,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export default function ApprovalWorkflow() {
     const [loans, setLoans] = useState([]);
+    const [filter, setFilter] = useState("all");
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedLoanId, setSelectedLoanId] = useState(null);
 
     useEffect(() => {
         const members = JSON.parse(localStorage.getItem("members") || "[]");
-
         const allLoans = members.flatMap((m) =>
             (m.loans || []).map((loan) => ({
                 ...loan,
                 memberId: m.memberId,
                 memberName: m.name,
+                status: loan.status || "pending",
             }))
         );
-
         setLoans(allLoans);
     }, []);
 
@@ -49,8 +56,25 @@ export default function ApprovalWorkflow() {
         localStorage.setItem("members", JSON.stringify(updatedMembers));
     };
 
-    const handleApprove = (loanId) => updateLoanStatus(loanId, "approved");
-    const handleReject = (loanId) => updateLoanStatus(loanId, "rejected");
+    const handleApprove = () => {
+        updateLoanStatus(selectedLoanId, "approved");
+        handleClose();
+    };
+
+    const handleReject = () => {
+        updateLoanStatus(selectedLoanId, "rejected");
+        handleClose();
+    };
+
+    const handleMenuOpen = (event, loanId) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedLoanId(loanId);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setSelectedLoanId(null);
+    };
 
     const getStatusChip = (status) => {
         switch (status) {
@@ -74,11 +98,36 @@ export default function ApprovalWorkflow() {
         }
     };
 
+    const filteredLoans = filter === "all" ? loans : loans.filter((loan) => loan.status === filter);
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 700 }}>
                 Loan Approval Workflow
             </Typography>
+
+            {/* Filter buttons */}
+            <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                {["all", "pending", "approved", "rejected"].map((f) => (
+                    <Button
+                        key={f}
+                        variant={filter === f ? "contained" : "outlined"}
+                        color={
+                            f === "approved"
+                                ? "success"
+                                : f === "rejected"
+                                    ? "error"
+                                    : f === "pending"
+                                        ? "warning"
+                                        : "primary"
+                        }
+                        onClick={() => setFilter(f)}
+                        size="small"
+                    >
+                        {f.charAt(0).toUpperCase() + f.slice(1)}
+                    </Button>
+                ))}
+            </Stack>
 
             <Paper sx={{ p: 1.5, borderRadius: 3, boxShadow: 3 }}>
                 <Table>
@@ -86,7 +135,7 @@ export default function ApprovalWorkflow() {
                         <TableRow>
                             <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Loan ID</TableCell>
                             <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Member</TableCell>
-                            <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Product</TableCell>
+                            <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Loan</TableCell>
                             <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Principal</TableCell>
                             <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Interest (%)</TableCell>
                             <TableCell sx={{ color: "white", fontSize: "0.875rem" }}>Tenure</TableCell>
@@ -97,50 +146,49 @@ export default function ApprovalWorkflow() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {loans.map((loan) => (
-                            <TableRow key={loan.loanId} sx={{ ...getRowStyle(loan.status) }}>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>{loan.loanId}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>
-                                    {loan.memberName} ({loan.memberId})
-                                </TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>{loan.product}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.principal}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>{loan.interest}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>{loan.tenureMonths}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.emi}</TableCell>
-                                <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.totalPayable}</TableCell>
-                                <TableCell>{getStatusChip(loan.status)}</TableCell>
-                                <TableCell>
-                                    {loan.status === "pending" && (
-                                        <Box sx={{ display: "flex", gap: 0.5 }}>
-                                            <Button
-                                                variant="contained"
-                                                color="success"
-                                                size="small"
-                                                onClick={() => handleApprove(loan.loanId)}
-                                            >
-                                                Approve
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                color="error"
-                                                size="small"
-                                                onClick={() => handleReject(loan.loanId)}
-                                            >
-                                                Reject
-                                            </Button>
-                                        </Box>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-
-                        {loans.length === 0 && (
+                        {filteredLoans.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={10} align="center" sx={{ fontSize: "0.875rem" }}>
                                     No loan applications found.
                                 </TableCell>
                             </TableRow>
+                        ) : (
+                            filteredLoans.map((loan) => (
+                                <TableRow key={loan.loanId} sx={{ ...getRowStyle(loan.status) }}>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>{loan.loanId}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>
+                                        {loan.memberName} ({loan.memberId})
+                                    </TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>{loan.product}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.principal}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>{loan.interest}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>{loan.tenureMonths}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.emi}</TableCell>
+                                    <TableCell sx={{ fontSize: "0.85rem" }}>₹{loan.totalPayable}</TableCell>
+                                    <TableCell>{getStatusChip(loan.status)}</TableCell>
+                                    <TableCell>
+                                        {loan.status === "pending" ? (
+                                            <>
+                                                <IconButton onClick={(e) => handleMenuOpen(e, loan.loanId)}>
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl) && selectedLoanId === loan.loanId}
+                                                    onClose={handleClose}
+                                                >
+                                                    <MenuItem onClick={handleApprove}>Approve</MenuItem>
+                                                    <MenuItem onClick={handleReject}>Reject</MenuItem>
+                                                </Menu>
+                                            </>
+                                        ) : (
+                                            <Typography sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+                                                Actions not available
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))
                         )}
                     </TableBody>
                 </Table>
