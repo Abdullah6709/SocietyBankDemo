@@ -1,22 +1,25 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import Drawer from '@mui/material/Drawer'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import HomeIcon from '@mui/icons-material/Home'
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
-import SavingsIcon from '@mui/icons-material/Savings'
-import AssessmentIcon from '@mui/icons-material/Assessment'
-import PeopleIcon from '@mui/icons-material/People'
-import SettingsIcon from '@mui/icons-material/Settings'
-import { styled } from '@mui/material/styles'
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Collapse from '@mui/material/Collapse';
+import HomeIcon from '@mui/icons-material/Home';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import SavingsIcon from '@mui/icons-material/Savings';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import PeopleIcon from '@mui/icons-material/People';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/material/styles';
 
-const drawerWidth = 280
+const drawerWidth = 280;
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   width: drawerWidth,
@@ -27,14 +30,14 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     border: 'none',
     boxShadow: theme.shadows[8]
   }
-}))
+}));
 
 const LogoSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4, 3, 3),
   textAlign: 'center',
   background: 'rgba(255,255,255,0.05)',
   marginBottom: theme.spacing(2)
-}))
+}));
 
 const StyledNavLink = styled(NavLink)(({ theme }) => ({
   textDecoration: 'none',
@@ -62,20 +65,31 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
     background: 'rgba(255,255,255,0.08)',
     transform: 'translateX(4px)'
   }
-}))
+}));
 
 const menu = [
   { to: '/', label: 'Dashboard', icon: <HomeIcon /> },
   { to: '/members', label: 'Members', icon: <PeopleIcon /> },
   { to: '/accounts', label: 'Accounts', icon: <AccountBalanceIcon /> },
   { to: '/transaction', label: 'Transaction', icon: <SettingsIcon /> },
-  { to: '/loans', label: 'Loans', icon: <SavingsIcon /> },
-
-  { to: '/reports', label: 'Reports', icon: <AssessmentIcon /> },
-
-]
+  {
+    label: 'Loans',
+    icon: <SavingsIcon />,
+    children: [
+      { to: '/loans', label: 'Loan Form' },
+      { to: '/approvalloan', label: 'Loan Status' }
+    ]
+  },
+  { to: '/reports', label: 'Reports', icon: <AssessmentIcon /> }
+];
 
 export default function Sidebar() {
+  const [openMenus, setOpenMenus] = useState({});
+
+  const handleToggle = (label) => {
+    setOpenMenus((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
+
   return (
     <StyledDrawer variant="permanent">
       <LogoSection>
@@ -102,24 +116,63 @@ export default function Sidebar() {
 
       <List sx={{ px: 1.5 }}>
         {menu.map((m) => (
-          <ListItem key={m.to} disablePadding sx={{ mb: 0.5 }}>
-            <StyledNavLink to={m.to}>
-              {({ isActive }) => (
-                <ListItemButton>
+          <React.Fragment key={m.to}>
+            <ListItem disablePadding sx={{ mb: 0.5 }}>
+              {m.children ? (
+                <ListItemButton onClick={() => handleToggle(m.label)}>
                   <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
                     {m.icon}
                   </ListItemIcon>
                   <ListItemText
                     primary={m.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.95rem',
-                      fontWeight: isActive ? 600 : 400
-                    }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
                   />
+                  {openMenus[m.label] ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
+              ) : (
+                <StyledNavLink to={m.to}>
+                  {({ isActive }) => (
+                    <ListItemButton>
+                      <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+                        {m.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={m.label}
+                        primaryTypographyProps={{
+                          fontSize: '0.95rem',
+                          fontWeight: isActive ? 600 : 400
+                        }}
+                      />
+                    </ListItemButton>
+                  )}
+                </StyledNavLink>
               )}
-            </StyledNavLink>
-          </ListItem>
+            </ListItem>
+
+            {m.children && (
+              <Collapse in={openMenus[m.label]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {m.children.map((child) => (
+                    <ListItem key={child.to} disablePadding sx={{ pl: 4, mb: 0.5 }}>
+                      <StyledNavLink to={child.to}>
+                        {({ isActive }) => (
+                          <ListItemButton>
+                            <ListItemText
+                              primary={child.label}
+                              primaryTypographyProps={{
+                                fontSize: '0.85rem',
+                                fontWeight: isActive ? 600 : 400
+                              }}
+                            />
+                          </ListItemButton>
+                        )}
+                      </StyledNavLink>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            )}
+          </React.Fragment>
         ))}
       </List>
 
@@ -148,5 +201,5 @@ export default function Sidebar() {
         </Typography>
       </Box>
     </StyledDrawer>
-  )
+  );
 }

@@ -21,13 +21,13 @@ export default function App() {
   useEffect(() => {
     const stored = localStorage.getItem("members");
     if (!stored || stored === "[]") {
-      fetch("/public/Member.json") // ⚠️ make sure Member.json is inside /public folder
+      fetch("/public/Member.json") 
         .then((res) => res.json())
         .then((data) => {
           localStorage.setItem("members", JSON.stringify(data));
-          console.log("✅ Members loaded into localStorage:", data);
+          console.log("Members loaded into localStorage:", data);
         })
-        .catch((err) => console.error("❌ Error loading Member.json:", err));
+        .catch((err) => console.error("Error loading Member.json:", err));
     }
   }, []);
   const handleLogin = (creds) => {

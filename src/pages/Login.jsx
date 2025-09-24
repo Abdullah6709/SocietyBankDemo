@@ -295,25 +295,7 @@ export default function Login({ onLogin }) {
             {isLoading ? "Signing In..." : "Sign In"}
           </SubmitButton>
 
-          {/* <Button
-            fullWidth
-            variant="outlined"
-            onClick={demoCredentials}
-            sx={{ 
-              mb: 3,
-              borderRadius: '12px',
-              textTransform: 'none',
-              borderColor: '#667eea',
-              color: '#667eea',
-              '&:hover': {
-                borderColor: '#764ba2',
-                background: 'rgba(102, 126, 234, 0.04)'
-              }
-            }}
-          >
-            Use Demo Credentials
-          </Button> */}
-        </form>
+            </form>
 
         <FeatureList>
           <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#667eea', mb: 1 }}>
